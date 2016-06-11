@@ -7,16 +7,16 @@
        (unique-string? "foo")        => false
        (unique-string? "abc")        => true
        (unique-string? "123,123")    => false
-       (unique-string? "aabbcc1122") => false
-       (unique-string? "")           => true)
+       (unique-string? "aabbcc1122") => false)
+
 
 (facts "unique-string-inplace?"     {:exercise 2
                                      :points   1}
        (unique-string? "foo")        => false
        (unique-string? "abc")        => true
        (unique-string? "123123")     => false
-       (unique-string? "aabbcc1122") => false
-       (unique-string? "")           => true)
+       (unique-string? "aabbcc1122") => false)
+
 
 
 (facts "reverse-str"                {:exercise 3
@@ -37,7 +37,7 @@
 
 (facts "str-compress"               {:exercise 3
                                      :points   1}
-       (str-compress "ccbaaa")       => "c2b1a3"
+       (str-compress "ccbaaaa")      => "c2b1a4"
        (str-compress "aabbaaa")      => "a2b2a3"
-       (str-compress "ab")           => "a1b1"
+       (str-compress "ab")           => "ab"
        (str-compress "aaabbbccc")    => "a3b3c3")

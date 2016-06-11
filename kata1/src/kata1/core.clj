@@ -1,27 +1,40 @@
-(ns kata1.core)
+(ns kata1.core
+  (:require [clojure.string :as str]))
 
 (defn unique-string? [string]
-  (cond (= (count (distinct string)) (count string)) true
-        :else false))
-
-(defn unqstr [string]
- (loop [ind 0]
-   (cond (= ind  (count string)) true
-         (not(= ind (clojure.string/last-index-of string (get string ind)))) false
-         :else (recur (inc ind)))))
+  (cond (>= (apply max (vals (frequencies string))) 2) false
+        :else                                          true))
 
 
-
-       
 (defn reverse-str [string]
-  (loop [reversed '()  forward string]
-    (cond (= (count reversed) (count string)) (str  reversed)
-          :else (recur (cons (str(first forward)) reversed) (map str (rest forward))))))
-       
-          
+  (loop [reversed '()
+         forward string]
+    (cond (= (count reversed)
+             (count string))  (apply str reversed)
+          :else              (recur (cons (first forward) reversed)
+                                    (rest forward)))))
+
+
+(defn unique-string-inplace? [s]
+  (loop [ind 0]
+    (cond (= ind (count s))                                               true
+          (loop [subind 0 char (get s ind)]
+            (cond (= char (get (subs (reverse-str s) 0 ind) subind)) true
+                  (= subind (count (subs (reverse-str s 0 ind))))    false
+                  :else (recur (inc subind) (char))))                     false
+          :else  (recur (inc ind)))))
+
 
 
 (defn is-perm? [str1 str2] 
-  (let [str1-contains (set str1)
-        str2-contains (set str2)]
-    (= (frequencies str1-contains) (frequencies str2-contains))))
+    (= (frequencies str1) (frequencies str2)))
+
+
+
+(defn str-compress [s]
+  (let [compressed (apply str (apply concat (map (juxt first count)
+                                                 (partition-by identity s))))]
+    (if (>= (count compressed) (count s)) s
+        compressed)))
+
+
