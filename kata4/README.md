@@ -10,12 +10,13 @@ Download from https://github.com/stuart22/katas/tree/master/kata4/target/uberjar
 
 Run this uberjar with the following terminal command:
 
-    $ java -jar kata4-uber.jar [args]
+    $ java -jar kata4-uber.jar args
 
     Args are accepted in the following format:
     int operator int operator int....int
 
-    Input must begin with an integer and end with an integer. All ints and args must be separated by at least one space.
+    Input must begin with an integer and end with an integer.
+     All ints and args must be separated by at least one space.
 
 ## Options
 
