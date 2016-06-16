@@ -3,32 +3,43 @@
             [clojure.string :as str])
   (:gen-class))
 
-(defn parser [str]
-  (str/split str #" "))
+(defn parser-get [s]
+  (str/split (get s 0) #" "))
 
-(defn str-to-op [& args]
+(defn spacer [s]
+  (->>
+   (partition 1 1 "" s)
+   (map (partial str/join ""))
+   (str/join " ")))
+
+
+(defn parser [s]
+  (str/split s #" "))
+
+(defn str-to-op [args]
   (loop [ops []
-         remaining (rest (parser (get args 0)))]
+         remaining (rest (parser  args))]
     (if (empty? remaining) ops
         (recur (conj ops (resolve (symbol (first remaining))))
                (rest (rest remaining))))))
 
 
-(defn str-to-int [& args]
+(defn str-to-int [ args]
   (loop [ints []
          remaining (parser  args )]
     (if (empty? remaining) ints
-        (recur (conj ints (Integer/parseInt (first remaining)))
+        (recur (conj ints(Integer/parseInt (first remaining)))
                (rest (rest remaining))))))
 
 
-(defn inter [& args]
+(defn inter [args]
   (let [ints (str-to-int args)
-        ops  (str-to-op args)]
-   (conj (interleave ints ops) (last ints))))
+        ops  (str-to-op args)
+        final (take-last 1 ints)]
+   (concat (interleave ints ops) final)))
 
 
-(defn solver [& args]
+(defn solver [args]
   (loop [[arg & args] (inter args)
          val          0 
          op           +]
@@ -40,13 +51,12 @@
 (defn -main [& args]
     (let [[opts args banner]
           (cli args
-               ["-h" "--help" "Show help" :flag true :default false])]
+              ["-h" "--help" "Show help" :flag true :default false])]
       (when (:help opts)
         (println "The interpreter takes arguments in the following format:"
-                 \newline " int operator int operator int..." 
-                 "(sequence must start/end with ints)"
-                 \newline "The interpretor accepts"  
+                 \newline " \" int operator int operator int...\" " 
+                "(sequence must be a string and  start/end with ints)"
+                \newline "The interpretor accepts"  
                  " + - / * as valid operators." ) 
         (System/exit 0))
-     (println (solver args))))
-
+    (println (solver (apply str(apply concat args))))))
