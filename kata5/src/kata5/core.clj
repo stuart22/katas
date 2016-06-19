@@ -25,7 +25,7 @@
 
 
 (defn get-visitors [db-spec]
-  (jdbc/query db-spec ["SELECT ALL name FROM Visitors"]))
+  (jdbc/query db-spec ["select * from visitors"]))
 
 (def vis-log (get-visitors db-spec))
 
@@ -46,8 +46,8 @@
                                   (clojure.pprint/pprint request-map)
                                   (def visitor (apply str (last (split-at 5 (:query-string request-map)))))
                                   (jdbc/db-do-commands "postgresql://localhost:5432/kata5db"
-                                                       (jdbc/create-table-ddl :Visitors [[:data :text]]))
-                                  (jdbc/insert! db-spec :Visitors
+                                                       (jdbc/create-table-ddl :visitors [[:data :text]]))
+                                  (jdbc/insert! db-spec :visitors
                                                 {:name visitor})
                                   (index-page visitor))))
 

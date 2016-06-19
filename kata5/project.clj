@@ -9,10 +9,10 @@
                  [ring/ring-defaults "0.1.5"]
                  [hiccup "1.0.5"]
                  [http-kit "2.1.16"]
-                 [korma "0.4.0"]
                  [org.xerial/sqlite-jdbc "3.7.15-M1"]
                  [java-jdbc/dsl "0.1.3"]
-                 [org.clojure/java.jdbc "0.6.1"]]
+                 [org.clojure/java.jdbc "0.6.1"]
+                 [korma "0.4.2"]]
   :jvm-opts ["-Djava.net.preferIPv4Stack"] 
   :main ^:skip-aot kata5.core
   :plugins [[lein-ring "0.9.7"]]
