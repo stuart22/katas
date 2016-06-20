@@ -6,28 +6,30 @@
             [clojure.string :as str]
             [clojure.pprint]
             [clojure.java.jdbc :as jdbc]
-            [java-jdbc.sql :as sql]
-            [korma.db :as korma])
+            [java-jdbc.sql :as sql])
   (:gen-class))
 
-(declare visitor portnum vis-log)
-
-(let [db-host "localhost"
-      db-port "5432"
-      db-name "kata5db"]
-
-  (def db-spec {:classname "org.postgresql.Driver" ; must be in classpath
-                :subprotocol "postgresql"
-                :subname (str "//" db-host ":" db-port "/" db-name)
-                :user "user"
-                :password "mypass"}))
-(korma/defdb db (korma/postgres db-spec))
+(declare visitor portnum vis-log db-spec)
 
 
-(defn get-visitors [db-spec]
-  (jdbc/query db-spec ["select * from visitors"]))
 
-(def vis-log (get-visitors db-spec))
+;(korma/defdb db (korma/postgres db-spec))
+
+;(korma/defdb prod (korma/postgres {:db         "kata5db"
+;                                   :user       "postgres"
+;                                   :password   "katapass"
+;                                   ;; optional keys
+;                                   :host       "localhost"
+;                                   :port       "5432"
+;                                   :delimiters ""}))  
+
+
+
+
+(def pg-db {:subprotocol "postgres"
+            :subname     "//localhost:5432/kata5db"
+            :user        "postgres"
+            :password    "katapass"})
 
 
 (defn index-page [username]
@@ -40,17 +42,28 @@
             "<br> Your name:<br> \n <input type=\"text\" name=arg1>\n</form> <br>" vis-log))))
 
 
+(defn insert-visitor
+  [visitors]
+  (jdbc/insert! pg-db
+                :visitors
+                {:name visitors}))
+ ;
+
+
+
+(defn get-visitors [pg-db]
+  (jdbc/query pg-db ["select * from public.visitors"]))
+
+;(def vis-log (get-visitors pg-db))
 
 (defroutes myapp
-           (GET "/" request-map (do
-                                  (clojure.pprint/pprint request-map)
-                                  (def visitor (apply str (last (split-at 5 (:query-string request-map)))))
-                                  (jdbc/db-do-commands "postgresql://localhost:5432/kata5db"
-                                                       (jdbc/create-table-ddl :visitors [[:data :text]]))
-                                  (jdbc/insert! db-spec :visitors
-                                                {:name visitor})
-                                  (index-page visitor))))
-
+  (GET "/"
+       request-map
+       (do
+         (clojure.pprint/pprint request-map)
+         (def visitor (apply str (last (split-at 5 (:query-string request-map)))))
+         (insert-visitor visitor)
+         (index-page visitor))))
 
 
 (defn -main [& port]
