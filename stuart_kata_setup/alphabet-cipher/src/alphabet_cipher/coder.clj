@@ -72,18 +72,35 @@
                         (rest key)
                         (rest message-rem)))))
 
+
+(defn first-three [key]
+ (apply str (concat (str (first key))
+            (str (first (rest key)))
+            (str (first (rest (rest key)))))))
+
+ (defn key-to-keyword [key]
+   (loop [key-rem (subs key 1)
+           acc 1]
+     (cond (= (first-three key) (first-three key-rem))
+           (subs key acc (+ acc acc))
+           :else (recur (subs key-rem 1) (+ 1 acc)))))
+
+    
+  
+
 (defn decipher [cipher message]
-  (loop [keyword []
-         ciph-rem cipher
-         mess-rem message]
+  (key-to-keyword (apply str (loop [keyword []
+                                    ciph-rem               cipher
+                                    mess-rem               message]
     (if (empty? ciph-rem)
       keyword
-      (recur (conj key (loop [ alph-str (into [] (filter char? (take 50 (cycle alphabet))))]
-                                  (cond (= (first mess-rem) (board-reverse (first alph-str) (first ciph-rem)))
-                                        (str (first alph-str))
-                                        :else (recur (rest (alph-str))))))
+      (recur (conj keyword (loop [ alph-str (into [] (filter char? (take 50 (cycle alphabet))))]
+                             (cond (= (str(first mess-rem))
+                                      (board-reverse (str(first alph-str)) (str(first ciph-rem))))
+                                   (str (first alph-str))
+                                   :else (recur (subvec alph-str 1)))))
                    (rest ciph-rem)
-                   (rest mess-rem)))))
+                   (rest mess-rem)))))))
                          
 
   
