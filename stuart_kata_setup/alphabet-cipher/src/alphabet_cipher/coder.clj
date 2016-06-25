@@ -52,25 +52,38 @@
                         (rest message-rem)))))
 
 
-(defn board-reverse [key-let]
-  (loop [alph-str (cycle alphabet)]
-    (cond (= (get alph-str (- 1 (letter-to-int key-let)))
-             (encode  
+(defn board-reverse [key-let dec-let]
+  (loop [ alph-str (into [] (filter char? (take 50 (cycle alphabet))))]
+    (cond (= (str (get alph-str (- (letter-to-int key-let) 1)))
+             dec-let)
+          (str (first alph-str))
+          :else (recur (subvec alph-str 1)))))
+    
          
                       
 
 (defn decode [keyword message]
-  (loop [encoded []
+  (loop [decoded []
          key (make-key keyword message)
          message-rem message]
     (cond (empty? message-rem)
-          (apply str encoded)
-          :else  (recur (conj encoded (str (get (apply str(rotate-to (str(first key))))
-                                                (- (letter-to-int (str(first message-rem))) 1))))
+          (apply str decoded)
+          :else  (recur (conj decoded (board-reverse (str(first key)) (str(first message-rem))))
                         (rest key)
                         (rest message-rem)))))
 
 (defn decipher [cipher message]
-  "decypherme")
+  (loop [keyword []
+         ciph-rem cipher
+         mess-rem message]
+    (if (empty? ciph-rem)
+      keyword
+      (recur (conj key (loop [ alph-str (into [] (filter char? (take 50 (cycle alphabet))))]
+                                  (cond (= (first mess-rem) (board-reverse (first alph-str) (first ciph-rem)))
+                                        (str (first alph-str))
+                                        :else (recur (rest (alph-str))))))
+                   (rest ciph-rem)
+                   (rest mess-rem)))))
+                         
 
   
